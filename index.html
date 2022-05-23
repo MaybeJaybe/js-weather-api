@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Ms Merriweather</title>
+    <style>
+      body, html {
+        height: 100%;
+      }
+      body {
+        background-color: #eee;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        font-size: 20px;
+        font-weight: lighter;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      h1 {
+        margin: 0;
+      } 
+      p {
+        margin: 0 0 1rem 0;
+      }
+      .container {
+        width: 400px;
+        display: flex;
+        flex-direction: column;
+        border: 1px;
+        position: relative;
+      }
+      #feels-like {
+        font-size: 15px;
+        font-weight: bold;
+        margin-left: 2.5em;
+      }
+      #humidity, #wind-speed {
+        font-size: .85em;
+      }
+      span {
+        position: absolute;
+        top: 60px;
+        right: -20px;
+      }
+      #temp-max, #temp-min {
+        margin-right: 1em;
+        font-weight: bold;
+      }
+      #desc {
+        font-size: 1.25em;
+      }
+
+      #form {
+        display: flex;
+      }
+      #form > select {
+        flex: 1;
+        padding: .5em;
+        font-size: .8em;
+        margin: 0 .5em;
+        border-radius: 0.5rem;
+        border: 1px solid;
+      }
+      #form > input {
+        flex: 1;
+        padding: 1em;
+        font-size: 1em;
+        margin: 0;
+        border-radius: 0.5rem 0 0 0.5rem;
+        border: 1px solid;
+        border-right: none;
+      }
+      input:-webkit-autofill,
+      input:-webkit-autofill:hover, 
+      input:-webkit-autofill:focus, 
+      input:-webkit-autofill:active {
+        -webkit-box-shadow: 0 0 0 30px #fff inset !important;
+      }
+
+      .lat-container {
+        border: 1px solid;
+        border-right: none;
+        border-radius: 0.5rem 0 0 0.5rem;
+        background-color: #fff;
+        padding: 0 8px;
+        position: relative;
+      }
+      .lat-container input {
+        border: none;
+        font-size: 16px;
+        outline: 0;
+        padding: 20px 0 10px 12px;
+      }
+      .lat-container.active label {
+        transform: translate(0, 4px) scale(.75);
+      }
+      .lon-container {
+        border: 1px solid;
+        background-color: #fff;
+        padding: 0 8px;
+        position: relative;
+      }
+      .lon-container input {
+        border: none;
+        font-size: 16px;
+        outline: 0;
+        padding: 20px 0 10px 12px;
+      }
+      .lon-container.active label {
+        transform: translate(0, 4px) scale(.75);
+      }
+      label {
+        padding-left: 1em;
+        font-size: 16px;
+        font-weight: bold;
+        position: absolute;
+        transform-origin: top left;
+        transform: translate(0, 16px) scale(1);
+        transition: all .1s ease-in-out;
+      }
+
+      #form > button {
+        padding: 0 1em;
+        background-color: rgb(106, 177, 238);
+        color: #fff;
+        font-size: 1em;
+        border: 1px solid;
+        margin: 0;
+        border-radius: 0 0.5rem 0.5rem 0;
+        border: 1px solid #000;
+        border-left: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1 id="temp"><!--Temp --></h1>
+      <p id="feels-like"><!-- feels like --></p>
+      <p id="humidity"><!--humidity--></p>
+      <p id="wind-speed"><!--wind speed --></p>
+      <span>
+        <p id="temp-max"><!-- max temp --></p>
+        <p id="temp-min"><!-- min temp --></p>
+      </span>
+      <p id="desc"><!-- description --></p>
+
+      <form id="form">
+        <!-- Zip code input -->
+
+        <input 
+          id="zip" 
+          type="number" 
+          placeholder="zip code"
+          title="Please enter a valid Zip Code"
+          pattern="^\d{5}(?:[-\s]\d{4})?$"
+        >
+
+        <!-- City, State input -->
+
+        <!-- <select
+          id="state"
+        >
+        <input
+          id="city"
+          type="text"
+          placeholder="city name"
+          title="Please enter a valid City name"
+        > -->
+
+        <!-- Geolocation input -->
+
+        <!-- <div id="lat-container" class="lat-container">
+          <label for="lat">Latitude:</label>
+          <input
+            id="lat"
+            type="text"
+            data-placeholder="46.2112458"
+            title="Please enter valid Latitude coordinates"
+          >
+        </div>
+        <div id="lon-container" class="lon-container">
+          <label for="lon">Longitude:</label>
+          <input
+            id="lon"
+            type="text"
+            data-placeholder="-119.1372338"
+            title="Please enter valid Longitude coordinates"
+          >
+        </div> -->
+
+        <!-- Search button -->
+
+        <button type="submit">Search</button>
+      </form>
+    </div>
+
+    <script type="module">
+    import { getWeatherByZip, getWeatherByCity, getWeatherByGeo, stateList } from './src/index.js'
+      // ------------------------------------------------------
+      // Developer Code
+
+      // Get Element refererences
+      const formEl = document.getElementById('form')
+      const zipInput = document.getElementById('zip')
+      const stateInput = document.getElementById('state')
+      const cityInput = document.getElementById('city')
+      const latInput = document.getElementById('lat')
+      const lonInput = document.getElementById('lon')
+
+      const tempEl = document.getElementById('temp')
+      const feelsLikeEl = document.getElementById('feels-like')
+      const humidEl = document.getElementById('humidity')
+      const windEl = document.getElementById('wind-speed')
+      const maxEl = document.getElementById('temp-max')
+      const minEl = document.getElementById('temp-min')
+      const descEl = document.getElementById('desc')
+
+      // Define event listeners
+
+      // Zip listener
+
+      formEl.addEventListener('submit', (e) => {
+        e.preventDefault()
+        const zip = zipInput.value
+        const apiKey = '1b55955da41917ca6f5dda369174a332';
+        const units = 'imperial'
+
+        getWeatherByZip(apiKey, zip)
+          .then((data) => {
+            console.log(data)
+            tempEl.innerHTML = `${data.temp} &#8457;`
+            feelsLikeEl.innerHTML = `Feels like: ${data.feels_like} &#8457;`
+            humidEl.innerHTML = `Humidity: ${data.humidity}`
+            windEl.innerHTML = `Wind speed: ${data.wind_speed} mph`
+            maxEl.innerHTML = `High: ${data.temp_max} &#8457;`
+            minEl.innerHTML = `Low: ${data.temp_min} &#8457;`
+            descEl.innerHTML = data.description
+          }).catch(err => console.log(err.message))
+      })
+
+      // City listener
+
+      // for (let i = 0; i < stateList.length; i++) {
+      //   var option = document.createElement("option")
+      //   option.text = stateList[i].name;
+      //   option.value = stateList[i].stateCode;
+      //   stateInput.add(option);
+      // }
+
+      // formEl.addEventListener('submit', (e) => {
+      //   e.preventDefault()
+      //   const city = cityInput.value
+      //   const state = stateInput.value
+      //   const apiKey = '1b55955da41917ca6f5dda369174a332';
+
+      //   getWeatherByCity(apiKey, city, state)
+      //     .then((data) => {
+      //       console.log(data)
+      //       tempEl.innerHTML = `${data.temp} &#8457;`
+      //       feelsLikeEl.innerHTML = `Feels like: ${data.feels_like} &#8457;`
+      //       humidEl.innerHTML = `Humidity: ${data.humidity}`
+      //       windEl.innerHTML = `Wind speed: ${data.wind_speed} mph`
+      //       maxEl.innerHTML = `High: ${data.temp_max} &#8457;`
+      //       minEl.innerHTML = `Low: ${data.temp_min} &#8457;`
+      //       descEl.innerHTML = data.description
+      //     }).catch(err => console.log(err.message))
+      // })
+
+      // Geo listener
+
+      // const latContainer = document.getElementById('lat-container')
+      // const lonContainer = document.getElementById('lon-container')
+      // const floatLabel = (() => {
+      //   const handleFocus = (e) => {
+      //     const target = e.target;
+      //     target.parentNode.classList.add('active');
+      //     target.setAttribute('placeholder', target.getAttribute('data-placeholder'));
+      //   };
+      //   const handleBlur = (e) => {
+      //     const target = e.target;
+      //     if (!target.value) {
+      //       target.parentNode.classList.remove('active');
+      //     }
+      //     target.removeAttribute('placeholder');
+      //   };
+      //   const bindEvents = (element) => {
+      //     const floatField = element.querySelector('input');
+      //     floatField.addEventListener('focus', handleFocus);
+      //     floatField.addEventListener('blur', handleBlur);
+      //   };
+      //   const init = () => {
+      //     const latContainers = document.querySelectorAll('.lat-container');
+      //     const lonContainers = document.querySelectorAll('.lon-container');
+      //     latContainers.forEach((element) => {
+      //       if (element.querySelector('input').value) {
+      //         element.classList.add('active');
+      //       }
+      //       bindEvents(element);
+      //     });
+      //     lonContainers.forEach((element) => {
+      //       if (element.querySelector('input').value) {
+      //         element.classList.add('active');
+      //       }
+      //       bindEvents(element);
+      //     });
+      //   };
+      //   return {
+      //     init: init
+      //   };
+      // })();
+      // floatLabel.init();
+
+      // formEl.addEventListener('submit', (e) => {
+      //   e.preventDefault()
+      //   const lat = latInput.value
+      //   const lon = lonInput.value
+      //   const apiKey = '1b55955da41917ca6f5dda369174a332';
+      //   const units = 'imperial'
+
+      //   getWeatherByGeo(apiKey, lat, lon, units)
+      //     .then((data) => {
+      //       console.log(data)
+      //       tempEl.innerHTML = `${data.temp} &#8457;`
+      //       feelsLikeEl.innerHTML = `Feels like: ${data.feels_like} &#8457;`
+      //       humidEl.innerHTML = `Humidity: ${data.humidity}`
+      //       windEl.innerHTML = `Wind speed: ${data.wind_speed} mph`
+      //       maxEl.innerHTML = `High: ${data.temp_max} &#8457;`
+      //       minEl.innerHTML = `Low: ${data.temp_min} &#8457;`
+      //       descEl.innerHTML = data.description
+      //     }).catch(err => console.log(err.message))
+      // })
+    </script>
+  </body>
+</html>
